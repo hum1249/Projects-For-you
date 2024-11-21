@@ -24,11 +24,11 @@ jobs:
         EC2_HOST: ${{ secrets.EC2_HOST }}
       run: |
         ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
-        # Update and install Python
+        # Update system and install Python and pip
         sudo yum update -y
-        sudo yum install python3 -y
+        sudo yum install python3 python3-pip -y
 
-        # Clone the repository if it doesn't exist
+        # Clone the repository if missing
         if [ ! -d "Projects-For-you" ]; then
             git clone https://github.com/hum1249/Projects-For-you.git
         fi
@@ -36,11 +36,11 @@ jobs:
         git checkout django-branch
         git pull origin django-branch
 
-        # Set up Python virtual environment
-        if [ ! -d "venv" ]; then
-            python3 -m venv venv
+        # Create and activate the virtual environment named 'myenv'
+        if [ ! -d "myenv" ]; then
+            python3 -m venv myenv
         fi
-        source venv/bin/activate
+        source myenv/bin/activate
 
         # Install dependencies
         pip install --upgrade pip
