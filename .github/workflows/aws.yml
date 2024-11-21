@@ -44,7 +44,7 @@ jobs:
 
         # Install dependencies
         pip install --upgrade pip
-        pip install -r Bachha_project/requirements.txt
+        pip install -r Bachha_project/requirement.txt
 
         # Start the Django development server
         cd Bachha_project
