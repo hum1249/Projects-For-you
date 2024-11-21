@@ -3,7 +3,7 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - django-branch # Trigger on push to the main branch
+      - django-branch  # Trigger on push to the django-branch
 
 jobs:
   deploy:
@@ -24,17 +24,31 @@ jobs:
         EC2_HOST: ${{ secrets.EC2_HOST }}
       run: |
         ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
-       
-        
+        # Update and install Python
+        sudo yum update -y
+        sudo yum install python3 -y
+
+        # Clone the repository if it doesn't exist
+        if [ ! -d "Projects-For-you" ]; then
+            git clone https://github.com/hum1249/Projects-For-you.git
+        fi
+        cd Projects-For-you
+        git checkout django-branch
+        git pull origin django-branch
+
+        # Set up Python virtual environment
+        if [ ! -d "venv" ]; then
+            python3 -m venv venv
+        fi
+        source venv/bin/activate
+
+        # Install dependencies
+        pip install --upgrade pip
+        pip install -r Bachha_project/requirements.txt
 
         # Start the Django development server
-        git remote add origin django-branch
-        source venv/bin/activate
-        cd Projects-For-you
         cd Bachha_project
-        pip install -r requirements.txt
         echo "Starting the Django development server..."
-        pkill -f runserver
+        pkill -f runserver || true
         nohup python manage.py runserver 0.0.0.0:8000 > server.log 2>&1 &
-
         EOF
